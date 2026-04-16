@@ -14,6 +14,7 @@ from app.config.mcp_config import mcp_config_prod
 from app.config.settings import settings
 from app.lighting.tools import (
     create_lighting_project_from_requirement,
+    generate_layout_for_project,
     select_fixtures_for_project,
     update_lighting_project_requirement,
 )
@@ -40,11 +41,12 @@ async def _build_tools() -> list[BaseTool | Callable]:
         create_scheduled_task,
         delete_scheduled_task,
         query_scheduled_tasks,
-        # 第 3 周第二批：只接入“初步灯具族选型”工具。
-        # 这里仍不接 layout/BOM/report，避免 Agent 越界到后续阶段。
+        # 第 3 周第二批：接入“初步灯具族选型”工具。
+        # 第 4 周第二批：仅接入 Layout Tool，不扩展布局能力，也不接 BOM/report/报价。
         create_lighting_project_from_requirement,
         update_lighting_project_requirement,
         select_fixtures_for_project,
+        generate_layout_for_project,
     ]
     if mcp_config_prod:
         static_client = MultiServerMCPClient(mcp_config_prod, tool_name_prefix=True)
