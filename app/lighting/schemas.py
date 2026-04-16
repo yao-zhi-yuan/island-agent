@@ -27,7 +27,9 @@ class ProjectState(BaseModel):
     # 第 3 周第一批只约定最小结构：status、version、selection_basis、
     # selected_fixtures、unresolved_roles、selection_warnings、source_rules。
     fixture_selection: dict[str, Any] = Field(default_factory=dict)
-    # 后续 Layout Tool 写入的灯位坐标和布局结果。
+    # Layout Tool 写入的灯位坐标和布局结果。
+    # 第 4 周第一批只约定最小结构：status、version、coordinate_system、
+    # room、placements、circuit_suggestions、layout_warnings、source_rules。
     layout_plan: dict[str, Any] = Field(default_factory=dict)
     # 后续 Validation/Critic 写入的质量校验结果。
     quality_report: dict[str, Any] = Field(default_factory=dict)

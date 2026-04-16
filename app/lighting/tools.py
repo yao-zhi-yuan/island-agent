@@ -4,6 +4,7 @@ import json
 
 from app.auth.auth_context import get_effective_user_id
 from app.lighting.fixtures import SUPPORTED_SPACE_TYPES, select_basic_fixture_families
+from app.lighting.layout import generate_single_room_layout
 from app.lighting.requirements import extract_requirement_spec, merge_requirement_spec
 from app.lighting.schemas import ProjectState
 from app.lighting.store import get_lighting_store, get_lighting_store_status
@@ -223,6 +224,121 @@ async def select_fixtures_for_project(project_id: str) -> str:
             "project_id": project["id"],
             "stage": project["project_state"]["stage"],
             "fixture_selection": project["project_state"]["fixture_selection"],
+        },
+        ensure_ascii=False,
+        default=str,
+    )
+
+
+def _layout_missing_fields(requirement_spec: dict, fixture_selection: dict) -> list[str]:
+    missing_fields: list[str] = []
+    dimensions = requirement_spec.get("dimensions")
+    selected_fixtures = fixture_selection.get("selected_fixtures")
+
+    if fixture_selection.get("status") != "selected":
+        missing_fields.append("fixture_selection.status")
+    if not isinstance(selected_fixtures, list) or not selected_fixtures:
+        missing_fields.append("fixture_selection.selected_fixtures")
+    if not isinstance(dimensions, dict):
+        missing_fields.extend(["dimensions.width", "dimensions.length"])
+    else:
+        # 第 4 周第一批必须拿到明确长宽，不能从面积反推矩形尺寸。
+        if dimensions.get("width") is None:
+            missing_fields.append("dimensions.width")
+        if dimensions.get("length") is None:
+            missing_fields.append("dimensions.length")
+    if requirement_spec.get("ceiling_height") is None:
+        missing_fields.append("ceiling_height")
+
+    return missing_fields
+
+
+async def generate_layout_for_project(project_id: str) -> str:
+    """
+    从 ProjectState.requirement_spec + fixture_selection 生成第 4 周第一批最小布局结果。
+
+    第一批只写入 layout_plan，不接 Agent，不进入 BOM、报价、report、rendering 或施工图。
+    """
+    status = get_lighting_store_status()
+    if not status.get("enabled"):
+        return json.dumps(
+            {"ok": False, "error": "lighting store not enabled, configure LIGHTING_POSTGRES_DSN/POSTGRES_DSN"},
+            ensure_ascii=False,
+        )
+
+    cleaned_project_id = (project_id or "").strip()
+    if not cleaned_project_id:
+        return json.dumps(
+            {"ok": False, "error": "project_id is required"},
+            ensure_ascii=False,
+        )
+
+    user_id = get_effective_user_id()
+    store = get_lighting_store()
+    try:
+        project = await store.get_project(user_id=user_id, project_id=cleaned_project_id)
+    except KeyError:
+        return json.dumps(
+            {"ok": False, "project_id": cleaned_project_id, "error": "lighting project not found"},
+            ensure_ascii=False,
+        )
+
+    state = ProjectState.model_validate(project["project_state"])
+    requirement_spec = state.requirement_spec or {}
+    fixture_selection = state.fixture_selection or {}
+    missing_fields = _layout_missing_fields(requirement_spec, fixture_selection)
+    if missing_fields:
+        return json.dumps(
+            {
+                "ok": False,
+                "project_id": cleaned_project_id,
+                "missing_fields": missing_fields,
+                "message": "布局信息不足，暂不能生成灯位布局。",
+            },
+            ensure_ascii=False,
+        )
+
+    try:
+        layout_plan = generate_single_room_layout(
+            requirement_spec=requirement_spec,
+            fixture_selection=fixture_selection,
+        )
+    except (KeyError, TypeError, ValueError):
+        return json.dumps(
+            {
+                "ok": False,
+                "project_id": cleaned_project_id,
+                "missing_fields": ["layout_inputs"],
+                "message": "布局输入字段无法解析，暂不能生成灯位布局。",
+            },
+            ensure_ascii=False,
+        )
+
+    if not layout_plan.get("placements"):
+        return json.dumps(
+            {
+                "ok": False,
+                "project_id": cleaned_project_id,
+                "missing_fields": ["layout_plan.placements"],
+                "message": "未能生成有效灯位点位。",
+            },
+            ensure_ascii=False,
+        )
+
+    state.stage = "layout"
+    state.layout_plan = layout_plan
+    project = await store.update_project_state(
+        user_id=user_id,
+        project_id=cleaned_project_id,
+        project_state=state,
+    )
+
+    return json.dumps(
+        {
+            "ok": True,
+            "project_id": project["id"],
+            "stage": project["project_state"]["stage"],
+            "layout_plan": project["project_state"]["layout_plan"],
         },
         ensure_ascii=False,
         default=str,
