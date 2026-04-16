@@ -1,0 +1,8 @@
+.vscode/
+__pycache__/
+test_data/
+*.jpg
+*.zip
+.DS_Store
+logs/
+nohup.out

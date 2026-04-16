@@ -1,0 +1,20 @@
+services:
+  copilot-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: copilot-agent:latest
+    container_name: copilot-agent
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    environment:
+      TZ: Asia/Shanghai
+      SANDBOX_ROOT_DIR: /srv/copilot-sandboxes
+      SANDBOX_DOCKER_HOST: unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /srv/copilot-sandboxes:/srv/copilot-sandboxes
+

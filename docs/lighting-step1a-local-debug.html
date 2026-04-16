@@ -1,0 +1,348 @@
+<!DOCTYPE html><html><head>
+      <title>lighting-step1a-local-debug</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:////Users/yaozhiyuan/.vscode/extensions/shd101wyy.markdown-preview-enhanced-0.8.22/crossnote/dependencies/katex/katex.min.css">
+      
+      
+      
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script>
+    </head>
+    <body for="html-export">
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="lighting-step-1a-新手本地联调手册">Lighting Step 1A 新手本地联调手册 </h1>
+<p>这份手册用于验证 lighting 业务域第 1 周最小闭环：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>创建照明设计项目 -&gt; 更新 ProjectState -&gt; 查询项目并读回 ProjectState -&gt; 确认数据写入 Postgres
+</code></pre><p>当前 Step 1A 只验证项目状态持久化，不包含 graph、tools、prompt、frontend，也不包含完整 CRUD。</p>
+<h2 id="1-前置准备">1. 前置准备 </h2>
+<p>进入项目目录：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">cd</span> /Users/yaozhiyuan/Documents/vscode/island-agent
+</code></pre><p>确认 <code>uv</code> 可用：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code>uv <span class="token parameter variable">--version</span>
+</code></pre><p>看到类似下面输出算成功：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>uv 0.x.x
+</code></pre><p>确认 Docker 可用：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">docker</span> <span class="token parameter variable">--version</span>
+</code></pre><p>看到类似下面输出算成功：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>Docker version xx.x.x
+</code></pre><p>如果后续 Docker 命令提示不能连接 Docker daemon，说明 Docker Desktop 没启动，需要先打开 Docker Desktop。</p>
+<p>安装项目依赖：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code>uv <span class="token function">sync</span>
+</code></pre><p>看到依赖安装完成且没有报错，算成功。</p>
+<h2 id="2-启动数据库">2. 启动数据库 </h2>
+<p>本地联调推荐用 Docker 启动一个 Postgres。这里把宿主机端口设为 <code>55432</code>，避免和本机已有 <code>5432</code> 冲突。</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">docker</span> run <span class="token parameter variable">--name</span> island-agent-postgres <span class="token punctuation">\</span>
+  <span class="token parameter variable">-e</span> <span class="token assign-left variable">POSTGRES_PASSWORD</span><span class="token operator">=</span>postgres <span class="token punctuation">\</span>
+  <span class="token parameter variable">-e</span> <span class="token assign-left variable">POSTGRES_DB</span><span class="token operator">=</span>island_agent <span class="token punctuation">\</span>
+  <span class="token parameter variable">-p</span> <span class="token number">55432</span>:5432 <span class="token punctuation">\</span>
+  <span class="token parameter variable">-d</span> postgres:16-alpine
+</code></pre><p>看到一串容器 ID，算启动成功。</p>
+<p>检查 Postgres 是否准备好：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">docker</span> <span class="token builtin class-name">exec</span> island-agent-postgres pg_isready <span class="token parameter variable">-U</span> postgres <span class="token parameter variable">-d</span> island_agent
+</code></pre><p>看到下面输出算成功：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>/var/run/postgresql:5432 - accepting connections
+</code></pre><p>如果提示容器已存在，可以直接启动已有容器：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">docker</span> start island-agent-postgres
+</code></pre><p>再检查一次：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">docker</span> <span class="token builtin class-name">exec</span> island-agent-postgres pg_isready <span class="token parameter variable">-U</span> postgres <span class="token parameter variable">-d</span> island_agent
+</code></pre><h2 id="3-配置环境变量">3. 配置环境变量 </h2>
+<h3 id="配置-qwen36-plus">配置 qwen3.6-plus </h3>
+<p>当前仓库通过 DashScope 调用千问模型，key 配在 <code>DASHSCOPE_API_KEY</code>。</p>
+<p>在当前终端执行：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">export</span> <span class="token assign-left variable">DASHSCOPE_API_KEY</span><span class="token operator">=</span><span class="token string">"你的 DashScope API Key"</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">AGENT_MODEL</span><span class="token operator">=</span><span class="token string">"qwen3.6-plus"</span>
+</code></pre><p>看到什么算成功：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">echo</span> <span class="token variable">$DASHSCOPE_API_KEY</span>
+<span class="token builtin class-name">echo</span> <span class="token variable">$AGENT_MODEL</span>
+</code></pre><p>能看到你刚才配置的 key 和 <code>qwen3.6-plus</code>，算成功。</p>
+<p>也可以写到项目根目录 <code>.env</code> 文件里：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">cat</span> <span class="token operator">&gt;</span> .env <span class="token operator">&lt;&lt;</span><span class="token string">'EOF'
+DASHSCOPE_API_KEY=你的 DashScope API Key
+AGENT_MODEL=qwen3.6-plus
+LIGHTING_POSTGRES_DSN=postgresql://postgres:postgres@127.0.0.1:55432/island_agent
+EOF</span>
+</code></pre><p><code>app/main.py</code> 已经调用 <code>load_dotenv()</code>，启动 FastAPI 时会读取 <code>.env</code>。</p>
+<h3 id="配置-lighting-数据库">配置 lighting 数据库 </h3>
+<p>推荐显式配置 lighting 专用 DSN：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">export</span> <span class="token assign-left variable">LIGHTING_POSTGRES_DSN</span><span class="token operator">=</span><span class="token string">"postgresql://postgres:postgres@127.0.0.1:55432/island_agent"</span>
+</code></pre><p>确认配置生效：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">echo</span> <span class="token variable">$LIGHTING_POSTGRES_DSN</span>
+</code></pre><p>看到下面内容算成功：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>postgresql://postgres:postgres@127.0.0.1:55432/island_agent
+</code></pre><h3 id="lighting_postgres_dsn-与-postgres_dsn-的优先级">LIGHTING_POSTGRES_DSN 与 POSTGRES_DSN 的优先级 </h3>
+<p>lighting store 的数据库连接优先级是：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>LIGHTING_POSTGRES_DSN 优先
+POSTGRES_DSN 兜底
+</code></pre><p>也就是说：</p>
+<ol>
+<li>如果配置了 <code>LIGHTING_POSTGRES_DSN</code>，lighting store 使用它。</li>
+<li>如果没有配置 <code>LIGHTING_POSTGRES_DSN</code>，但配置了 <code>POSTGRES_DSN</code>，lighting store 使用 <code>POSTGRES_DSN</code>。</li>
+<li>如果两个都没有配置，lighting store 不会启用，调用 lighting API 会返回 <code>503 lighting store not enabled</code>。</li>
+</ol>
+<p>如果你希望所有模块共用同一个数据库，也可以只配置：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">export</span> <span class="token assign-left variable">POSTGRES_DSN</span><span class="token operator">=</span><span class="token string">"postgresql://postgres:postgres@127.0.0.1:55432/island_agent"</span>
+</code></pre><p>但 Step 1A 联调建议使用更明确的：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">export</span> <span class="token assign-left variable">LIGHTING_POSTGRES_DSN</span><span class="token operator">=</span><span class="token string">"postgresql://postgres:postgres@127.0.0.1:55432/island_agent"</span>
+</code></pre><h2 id="4-启动-fastapi">4. 启动 FastAPI </h2>
+<p>启动服务：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">cd</span> /Users/yaozhiyuan/Documents/vscode/island-agent
+uv run uvicorn app.main:app <span class="token parameter variable">--reload</span>
+</code></pre><p>看到类似下面输出算成功：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>Uvicorn running on http://127.0.0.1:8000
+[startup] Swagger UI: http://127.0.0.1:8000/docs
+[startup] H5 Chat: http://127.0.0.1:8000/chat
+[startup] AGUI Chat Endpoint: http://127.0.0.1:8000/v1/chat
+</code></pre><p>再开一个新终端，测试健康检查：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">curl</span> <span class="token parameter variable">-s</span> http://127.0.0.1:8000/health
+</code></pre><p>看到下面输出算成功：</p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span><span class="token property">"status"</span><span class="token operator">:</span><span class="token string">"ok"</span><span class="token punctuation">}</span>
+</code></pre><h3 id="确认-lighting-store-实际连到了哪个数据库">确认 lighting store 实际连到了哪个数据库 </h3>
+<p>当前 Step 1A 没有做 <code>/api/lighting/status</code> 接口，所以最直接的确认方式是看你当前进程的环境变量：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">echo</span> <span class="token variable">$LIGHTING_POSTGRES_DSN</span>
+<span class="token builtin class-name">echo</span> <span class="token variable">$POSTGRES_DSN</span>
+</code></pre><p>判断规则：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>如果 LIGHTING_POSTGRES_DSN 有值，lighting store 连它。
+如果 LIGHTING_POSTGRES_DSN 为空但 POSTGRES_DSN 有值，lighting store 连 POSTGRES_DSN。
+</code></pre><p>如果你用的是本手册里的配置，lighting store 实际连接的是：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>postgresql://postgres:postgres@127.0.0.1:55432/island_agent
+</code></pre><p>还可以通过 Postgres 表验证连接是否正确。启动 FastAPI 后，执行：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">docker</span> <span class="token builtin class-name">exec</span> <span class="token parameter variable">-it</span> island-agent-postgres psql <span class="token parameter variable">-U</span> postgres <span class="token parameter variable">-d</span> island_agent <span class="token parameter variable">-c</span> <span class="token string">"\dt"</span>
+</code></pre><p>看到 <code>lighting_projects</code> 表，说明 FastAPI 启动时 lighting store 已连到这个数据库并建表成功。</p>
+<h2 id="5-调接口验证">5. 调接口验证 </h2>
+<p>Step 1A 只有三个 lighting 接口：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>POST  /api/lighting/projects
+GET   /api/lighting/projects/{project_id}
+PATCH /api/lighting/projects/{project_id}/state
+</code></pre><h3 id="51-创建项目">5.1 创建项目 </h3>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">curl</span> <span class="token parameter variable">-s</span> <span class="token parameter variable">-X</span> POST http://127.0.0.1:8000/api/lighting/projects <span class="token punctuation">\</span>
+  <span class="token parameter variable">-H</span> <span class="token string">'Content-Type: application/json'</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">-d</span> <span class="token string">'{
+    "session_id": "demo-session-001",
+    "title": "卧室照明设计",
+    "initial_requirement": "设计一个温馨卧室"
+  }'</span>
+</code></pre><p>看到类似下面结果算成功：</p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"</span><span class="token punctuation">,</span>
+  <span class="token property">"user_id"</span><span class="token operator">:</span> <span class="token string">"demo-user"</span><span class="token punctuation">,</span>
+  <span class="token property">"session_id"</span><span class="token operator">:</span> <span class="token string">"demo-session-001"</span><span class="token punctuation">,</span>
+  <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"卧室照明设计"</span><span class="token punctuation">,</span>
+  <span class="token property">"project_state"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"stage"</span><span class="token operator">:</span> <span class="token string">"requirement"</span><span class="token punctuation">,</span>
+    <span class="token property">"requirement_spec"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"initial_requirement"</span><span class="token operator">:</span> <span class="token string">"设计一个温馨卧室"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"geometry_spec"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"design_strategy"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"fixture_selection"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"layout_plan"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"quality_report"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"delivery_package"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"created_at"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+  <span class="token property">"updated_at"</span><span class="token operator">:</span> <span class="token string">"..."</span>
+<span class="token punctuation">}</span>
+</code></pre><p>把返回的 <code>id</code> 保存到环境变量：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">export</span> <span class="token assign-left variable">PROJECT_ID</span><span class="token operator">=</span><span class="token string">"上一步返回的 id"</span>
+</code></pre><p>例如：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">export</span> <span class="token assign-left variable">PROJECT_ID</span><span class="token operator">=</span><span class="token string">"93d5fa26-0f6e-4e70-8536-493941893f0a"</span>
+</code></pre><h3 id="52-查询项目">5.2 查询项目 </h3>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">curl</span> <span class="token parameter variable">-s</span> http://127.0.0.1:8000/api/lighting/projects/<span class="token variable">$PROJECT_ID</span>
+</code></pre><p>看到同一个 <code>id</code>，并且能看到 <code>project_state</code>，算成功。</p>
+<h3 id="53-更新-projectstate">5.3 更新 ProjectState </h3>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">curl</span> <span class="token parameter variable">-s</span> <span class="token parameter variable">-X</span> PATCH http://127.0.0.1:8000/api/lighting/projects/<span class="token variable">$PROJECT_ID</span>/state <span class="token punctuation">\</span>
+  <span class="token parameter variable">-H</span> <span class="token string">'Content-Type: application/json'</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">-d</span> <span class="token string">'{
+    "project_state": {
+      "stage": "geometry",
+      "requirement_spec": {
+        "space_type": "bedroom",
+        "style": "warm"
+      },
+      "geometry_spec": {
+        "width": 4,
+        "length": 3
+      },
+      "design_strategy": {},
+      "fixture_selection": {},
+      "layout_plan": {},
+      "quality_report": {},
+      "delivery_package": {}
+    }
+  }'</span>
+</code></pre><p>看到返回里的 <code>stage</code> 变成下面这样，算成功：</p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token property">"stage"</span><span class="token operator">:</span> <span class="token string">"geometry"</span>
+</code></pre><p>并且能看到：</p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token property">"requirement_spec"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+  <span class="token property">"space_type"</span><span class="token operator">:</span> <span class="token string">"bedroom"</span><span class="token punctuation">,</span>
+  <span class="token property">"style"</span><span class="token operator">:</span> <span class="token string">"warm"</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="54-再次查询确认读回">5.4 再次查询确认读回 </h3>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">curl</span> <span class="token parameter variable">-s</span> http://127.0.0.1:8000/api/lighting/projects/<span class="token variable">$PROJECT_ID</span>
+</code></pre><p>看到刚才 PATCH 的 <code>stage=geometry</code>、<code>space_type=bedroom</code>、<code>style=warm</code> 仍然存在，说明 <code>ProjectState</code> 已经写入 Postgres 并能读回。</p>
+<h3 id="55-使用仓库已有验证脚本">5.5 使用仓库已有验证脚本 </h3>
+<p>当前仓库已经提供 Step 1A 验证脚本：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token assign-left variable">LIGHTING_POSTGRES_DSN</span><span class="token operator">=</span><span class="token string">"postgresql://postgres:postgres@127.0.0.1:55432/island_agent"</span> <span class="token punctuation">\</span>
+<span class="token assign-left variable">PYTHONDONTWRITEBYTECODE</span><span class="token operator">=</span><span class="token number">1</span> <span class="token punctuation">\</span>
+<span class="token assign-left variable">UV_CACHE_DIR</span><span class="token operator">=</span>/tmp/island-agent-uv-cache <span class="token punctuation">\</span>
+uv run python scripts/verify_lighting_step1a.py
+</code></pre><p>看到下面输出算成功：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>lighting Step 1A verification passed
+project_id=...
+owner_user_id=...
+outsider_get_status=404
+</code></pre><p>这个脚本会验证：</p>
+<ol>
+<li>创建项目成功。</li>
+<li>PATCH 更新 <code>ProjectState</code> 成功。</li>
+<li>GET 能读回更新后的 <code>ProjectState</code>。</li>
+<li>owner 用户能访问自己的项目。</li>
+<li>outsider 用户访问同一个项目返回 <code>404</code>。</li>
+<li>脚本结束后会清理自己创建的测试数据。</li>
+</ol>
+<h2 id="6-直接查询-postgres-表">6. 直接查询 Postgres 表 </h2>
+<p>进入 Postgres：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">docker</span> <span class="token builtin class-name">exec</span> <span class="token parameter variable">-it</span> island-agent-postgres psql <span class="token parameter variable">-U</span> postgres <span class="token parameter variable">-d</span> island_agent
+</code></pre><p>看到下面提示符算成功：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>island_agent=#
+</code></pre><p>查看表：</p>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code>\dt
+</code></pre><p>看到 <code>lighting_projects</code>，算成功。</p>
+<p>查看表结构：</p>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code>\d lighting_projects
+</code></pre><p>应该能看到这些字段：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>id
+user_id
+session_id
+title
+project_state
+created_at
+updated_at
+</code></pre><p>其中 <code>project_state</code> 类型是 <code>jsonb</code>。<code>JSONB</code> 可以理解为 Postgres 里保存 JSON 的字段类型，适合保存会逐步扩展的项目状态。</p>
+<p>查询最近的项目：</p>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code><span class="token keyword keyword-SELECT">SELECT</span> id<span class="token punctuation">,</span> user_id<span class="token punctuation">,</span> session_id<span class="token punctuation">,</span> title<span class="token punctuation">,</span> project_state
+<span class="token keyword keyword-FROM">FROM</span> lighting_projects
+<span class="token keyword keyword-ORDER">ORDER</span> <span class="token keyword keyword-BY">BY</span> updated_at <span class="token keyword keyword-DESC">DESC</span>
+<span class="token keyword keyword-LIMIT">LIMIT</span> <span class="token number">5</span><span class="token punctuation">;</span>
+</code></pre><p>看到你刚才创建的项目，算成功。</p>
+<p>只查某个项目的 <code>ProjectState</code>：</p>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code><span class="token keyword keyword-SELECT">SELECT</span> project_state
+<span class="token keyword keyword-FROM">FROM</span> lighting_projects
+<span class="token keyword keyword-WHERE">WHERE</span> id <span class="token operator">=</span> <span class="token string">'你的 PROJECT_ID'</span><span class="token punctuation">;</span>
+</code></pre><p>如果看到 PATCH 后的内容，比如：</p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"stage"</span><span class="token operator">:</span> <span class="token string">"geometry"</span><span class="token punctuation">,</span>
+  <span class="token property">"requirement_spec"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"space_type"</span><span class="token operator">:</span> <span class="token string">"bedroom"</span><span class="token punctuation">,</span>
+    <span class="token property">"style"</span><span class="token operator">:</span> <span class="token string">"warm"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><p>说明数据库持久化正确。</p>
+<p>退出 Postgres：</p>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code>\q
+</code></pre><h2 id="7-常见报错与排查">7. 常见报错与排查 </h2>
+<h3 id="71-dashscope_api_key-is-not-set">7.1 <code>DASHSCOPE_API_KEY is not set</code> </h3>
+<p>原因：FastAPI 启动时会构建 Agent，需要千问 key。</p>
+<p>处理：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">export</span> <span class="token assign-left variable">DASHSCOPE_API_KEY</span><span class="token operator">=</span><span class="token string">"你的 DashScope API Key"</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">AGENT_MODEL</span><span class="token operator">=</span><span class="token string">"qwen3.6-plus"</span>
+uv run uvicorn app.main:app <span class="token parameter variable">--reload</span>
+</code></pre><p>看到 <code>Uvicorn running on http://127.0.0.1:8000</code> 算成功。</p>
+<h3 id="72-lighting-store-not-enabled">7.2 <code>lighting store not enabled</code> </h3>
+<p>原因：没有配置 <code>LIGHTING_POSTGRES_DSN</code> 或 <code>POSTGRES_DSN</code>。</p>
+<p>处理：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">export</span> <span class="token assign-left variable">LIGHTING_POSTGRES_DSN</span><span class="token operator">=</span><span class="token string">"postgresql://postgres:postgres@127.0.0.1:55432/island_agent"</span>
+uv run uvicorn app.main:app <span class="token parameter variable">--reload</span>
+</code></pre><p>重新调用创建项目接口，能返回项目 JSON 算成功。</p>
+<h3 id="73-connection-refused">7.3 <code>connection refused</code> </h3>
+<p>原因：Postgres 没启动，或者 DSN 端口写错。</p>
+<p>排查：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">docker</span> <span class="token function">ps</span>
+<span class="token function">docker</span> <span class="token builtin class-name">exec</span> island-agent-postgres pg_isready <span class="token parameter variable">-U</span> postgres <span class="token parameter variable">-d</span> island_agent
+</code></pre><p>如果容器没运行：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">docker</span> start island-agent-postgres
+</code></pre><p>看到 <code>accepting connections</code> 算成功。</p>
+<h3 id="74-port-is-already-allocated">7.4 <code>port is already allocated</code> </h3>
+<p>原因：<code>55432</code> 端口被占用。</p>
+<p>查看占用：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">lsof</span> <span class="token parameter variable">-nP</span> <span class="token parameter variable">-iTCP:55432</span> <span class="token parameter variable">-sTCP:LISTEN</span>
+</code></pre><p>也可以换一个端口，比如 <code>55433</code>：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">docker</span> run <span class="token parameter variable">--name</span> island-agent-postgres-2 <span class="token punctuation">\</span>
+  <span class="token parameter variable">-e</span> <span class="token assign-left variable">POSTGRES_PASSWORD</span><span class="token operator">=</span>postgres <span class="token punctuation">\</span>
+  <span class="token parameter variable">-e</span> <span class="token assign-left variable">POSTGRES_DB</span><span class="token operator">=</span>island_agent <span class="token punctuation">\</span>
+  <span class="token parameter variable">-p</span> <span class="token number">55433</span>:5432 <span class="token punctuation">\</span>
+  <span class="token parameter variable">-d</span> postgres:16-alpine
+</code></pre><p>然后修改 DSN：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">export</span> <span class="token assign-left variable">LIGHTING_POSTGRES_DSN</span><span class="token operator">=</span><span class="token string">"postgresql://postgres:postgres@127.0.0.1:55433/island_agent"</span>
+</code></pre><h3 id="75-404-lighting-project-not-found">7.5 <code>404 lighting project not found</code> </h3>
+<p>常见原因：</p>
+<ol>
+<li><code>PROJECT_ID</code> 填错了。</li>
+<li>项目属于另一个 <code>user_id</code>。</li>
+<li>你用验证脚本创建的项目已经被脚本清理。</li>
+</ol>
+<p>排查：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">echo</span> <span class="token variable">$PROJECT_ID</span>
+</code></pre><p>直接查数据库：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">docker</span> <span class="token builtin class-name">exec</span> <span class="token parameter variable">-it</span> island-agent-postgres psql <span class="token parameter variable">-U</span> postgres <span class="token parameter variable">-d</span> island_agent
+</code></pre><pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code><span class="token keyword keyword-SELECT">SELECT</span> id<span class="token punctuation">,</span> user_id<span class="token punctuation">,</span> title
+<span class="token keyword keyword-FROM">FROM</span> lighting_projects
+<span class="token keyword keyword-ORDER">ORDER</span> <span class="token keyword keyword-BY">BY</span> updated_at <span class="token keyword keyword-DESC">DESC</span>
+<span class="token keyword keyword-LIMIT">LIMIT</span> <span class="token number">10</span><span class="token punctuation">;</span>
+</code></pre><p>能看到项目 ID 和 user_id，说明数据在库里。</p>
+<h3 id="76-422-unprocessable-entity">7.6 <code>422 Unprocessable Entity</code> </h3>
+<p>原因：请求 JSON 不符合接口 schema，最常见是 PATCH 时少了 <code>project_state</code> 外层。</p>
+<p>正确结构：</p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"project_state"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"stage"</span><span class="token operator">:</span> <span class="token string">"geometry"</span><span class="token punctuation">,</span>
+    <span class="token property">"requirement_spec"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"geometry_spec"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"design_strategy"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"fixture_selection"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"layout_plan"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"quality_report"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"delivery_package"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="77-cannot-connect-to-the-docker-daemon">7.7 <code>Cannot connect to the Docker daemon</code> </h3>
+<p>原因：Docker Desktop 没启动。</p>
+<p>处理：打开 Docker Desktop，等它启动完成后执行：</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">docker</span> <span class="token function">ps</span>
+</code></pre><p>看到类似下面表头，算成功：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>CONTAINER ID   IMAGE   COMMAND
+</code></pre><h2 id="最小联调链路速记">最小联调链路速记 </h2>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>启动 Postgres
+-&gt; 配置 LIGHTING_POSTGRES_DSN
+-&gt; 配置 DASHSCOPE_API_KEY 和 AGENT_MODEL=qwen3.6-plus
+-&gt; 启动 FastAPI
+-&gt; POST 创建项目
+-&gt; PATCH 更新 ProjectState
+-&gt; GET 读回项目
+-&gt; psql 查询 lighting_projects 表
+</code></pre>
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+  
+    </body></html>

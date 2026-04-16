@@ -1,0 +1,1355 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agent Chat</title>
+    <style>
+      :root {
+        --bg: #f2f5fb;
+        --card: #ffffff;
+        --line: #d6deeb;
+        --text: #1e293b;
+        --muted: #64748b;
+        --primary: #0ea5e9;
+        --app-h: 100dvh;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        width: 100%;
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: var(--text);
+        background: linear-gradient(140deg, #e0ecff 0%, var(--bg) 45%);
+        overflow: hidden;
+      }
+      .layout {
+        max-width: 1180px;
+        margin: 0 auto;
+        height: var(--app-h);
+        padding: 12px;
+        position: relative;
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: 0 12px 26px rgba(15, 23, 42, 0.06);
+      }
+      .sidebar {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        min-height: calc(var(--app-h) - 24px);
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        width: 280px;
+        transform: translateX(calc(-100% - 14px));
+        transition: transform 0.2s ease;
+        z-index: 20;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .side-head {
+        padding: 10px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .title {
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .icon-btn {
+        width: 34px;
+        height: 34px;
+        border: 0;
+        border-radius: 10px;
+        cursor: pointer;
+        background: #e0f2fe;
+        color: #0369a1;
+        font-size: 22px;
+        line-height: 1;
+      }
+      .sessions {
+        overflow: auto;
+        padding: 8px;
+      }
+      .session {
+        width: 100%;
+        text-align: left;
+        border: 1px solid transparent;
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 9px 10px;
+        margin-bottom: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .session.active {
+        border-color: #7dd3fc;
+        background: #e0f2fe;
+      }
+      .session .name {
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .session .meta {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 3px;
+      }
+      .session-main {
+        min-width: 0;
+        flex: 1;
+      }
+      .session-del {
+        border: 0;
+        background: transparent;
+        color: #94a3b8;
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .session-del:hover {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .chat-panel {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        height: calc(var(--app-h) - 24px);
+        overflow: hidden;
+      }
+      .chat-head {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--line);
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .chat-head-actions {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .menu-btn {
+        width: 34px;
+        height: 34px;
+        border: 0;
+        border-radius: 10px;
+        background: #f1f5f9;
+        color: #334155;
+        cursor: pointer;
+        font-size: 18px;
+      }
+      .chat-title-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .memory-btn {
+        padding: 0 12px;
+        height: 34px;
+        border: 0;
+        border-radius: 10px;
+        background: #f1f5f9;
+        color: #334155;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .messages {
+        overflow: auto;
+        padding: 14px;
+        min-height: 0;
+        -webkit-overflow-scrolling: touch;
+      }
+      .msg {
+        max-width: 84%;
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-bottom: 10px;
+        line-height: 1.55;
+        white-space: pre-wrap;
+      }
+      .msg.user {
+        margin-left: auto;
+        background: #e0f2fe;
+        border: 1px solid #bae6fd;
+      }
+      .msg.assistant {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+      }
+      .msg.system {
+        max-width: 100%;
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        color: #9a3412;
+      }
+      .msg-image {
+        display: block;
+        max-width: min(260px, 100%);
+        max-height: 220px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-top: 8px;
+        border: 1px solid rgba(15, 23, 42, 0.12);
+      }
+      .image-preview {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 10px 0;
+        border-top: 1px solid var(--line);
+      }
+      .image-preview.show {
+        display: flex;
+      }
+      .image-preview img {
+        width: 64px;
+        height: 64px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+      }
+      .image-preview-info {
+        flex: 1;
+        min-width: 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .image-preview-name {
+        color: var(--text);
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .composer {
+        padding: 10px;
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+      }
+      textarea {
+        flex: 1;
+        min-height: 62px;
+        max-height: 180px;
+        resize: vertical;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 15px;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .btn {
+        border: 0;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 18px;
+      }
+      .action-btn {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        justify-self: center;
+      }
+      .action-btn svg {
+        width: 28px;
+        height: 28px;
+        display: block;
+      }
+      .btn.primary {
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 8px 16px rgba(14, 165, 233, 0.3);
+      }
+      .btn.ghost {
+        background: #f1f5f9;
+        color: #334155;
+      }
+      .action-btn:hover {
+        transform: translateY(-1px);
+      }
+      .action-btn:active {
+        transform: translateY(0);
+      }
+      #voiceBtn.recording {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .status {
+        font-size: 12px;
+        color: var(--muted);
+        padding: 0 12px 8px;
+      }
+      .backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.28);
+        z-index: 10;
+        display: none;
+      }
+      .backdrop.show {
+        display: block;
+      }
+      .memory-drawer {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        width: min(420px, calc(100vw - 24px));
+        height: calc(var(--app-h) - 24px);
+        display: grid;
+        grid-template-rows: auto 1fr;
+        transform: translateX(calc(100% + 16px));
+        transition: transform 0.2s ease;
+        z-index: 21;
+      }
+      .memory-drawer.open {
+        transform: translateX(0);
+      }
+      .memory-head {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .memory-body {
+        overflow: auto;
+        padding: 12px;
+        display: grid;
+        gap: 12px;
+      }
+      .memory-card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #f8fafc;
+        padding: 10px;
+      }
+      .memory-card h3 {
+        margin: 0 0 8px;
+        font-size: 13px;
+      }
+      .memory-form {
+        display: grid;
+        gap: 8px;
+      }
+      .memory-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .memory-list {
+        display: grid;
+        gap: 8px;
+      }
+      .memory-item {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 8px 10px;
+      }
+      .memory-item-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .memory-item-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #334155;
+        flex: 1;
+      }
+      .memory-item-sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .memory-item-text {
+        font-size: 13px;
+        color: #0f172a;
+        margin-top: 6px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .mini-btn {
+        border: 0;
+        border-radius: 8px;
+        background: #e0f2fe;
+        color: #0369a1;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 6px 8px;
+      }
+      .mini-btn.danger {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .field,
+      .memory-card textarea,
+      .memory-card select {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 10px;
+        font-size: 13px;
+        background: #fff;
+      }
+      .memory-card textarea {
+        min-height: 72px;
+        resize: vertical;
+      }
+      .empty {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      @media (max-width: 840px) {
+        .layout {
+          max-width: 100%;
+          padding: 8px;
+        }
+        .sidebar {
+          left: 8px;
+          top: 8px;
+          width: min(86vw, 300px);
+          min-height: calc(var(--app-h) - 16px);
+        }
+        .memory-drawer {
+          right: 8px;
+          top: 8px;
+          width: min(94vw, 420px);
+          height: calc(var(--app-h) - 16px);
+        }
+        .chat-panel {
+          height: calc(var(--app-h) - 16px);
+        }
+        .chat-head {
+          padding-top: calc(10px + env(safe-area-inset-top));
+        }
+        .composer {
+          padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        }
+      }
+      @media (max-width: 640px) {
+        .msg {
+          max-width: 92%;
+          font-size: 14px;
+        }
+        .messages {
+          padding: 10px;
+        }
+        .composer {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 6px;
+        }
+        textarea {
+          width: 100%;
+          min-height: 54px;
+          max-height: 140px;
+          font-size: 14px;
+        }
+        .actions {
+          justify-content: flex-end;
+        }
+        .btn {
+          font-size: 16px;
+        }
+        .action-btn {
+          width: 52px;
+          height: 52px;
+        }
+        .action-btn svg {
+          width: 26px;
+          height: 26px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="layout">
+      <aside class="panel sidebar">
+        <div class="side-head">
+          <div class="title">会话列表</div>
+          <button id="newSessionBtn" class="icon-btn" title="新建会话">+</button>
+        </div>
+        <div id="sessions" class="sessions"></div>
+      </aside>
+      <div id="backdrop" class="backdrop"></div>
+
+      <section class="panel chat-panel">
+        <div class="chat-head">
+          <button id="toggleSessionsBtn" class="menu-btn" title="会话列表">☰</button>
+          <div id="chatTitle" class="chat-title-text">新会话</div>
+          <div class="chat-head-actions">
+            <button id="toggleMemoryBtn" class="memory-btn" title="记忆管理">记忆</button>
+          </div>
+        </div>
+        <div id="messages" class="messages"></div>
+        <div>
+          <div id="imagePreview" class="image-preview">
+            <img id="imagePreviewImg" alt="待发送图片预览" />
+            <div class="image-preview-info">
+              <div id="imagePreviewName" class="image-preview-name"></div>
+              <div id="imagePreviewMeta"></div>
+            </div>
+            <button id="removeImageBtn" class="mini-btn danger" title="移除图片">移除</button>
+          </div>
+          <div class="composer">
+            <textarea id="input" placeholder="输入内容..."></textarea>
+            <div class="actions">
+              <input id="excelInput" type="file" accept=".xlsx,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12" hidden />
+              <button id="excelBtn" class="btn ghost action-btn" title="上传 Excel" aria-label="上传 Excel">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 3h10l4 4v14H5zm9 1.8V8h3.2zM7 5v14h10V10h-5V5zm1.8 6h6.4v1.6h-2.1l1.8 2.4h-2l-.9-1.3-.9 1.3h-2l1.8-2.4H8.8zm0 5h6.4v1.6H8.8z"/></svg>
+              </button>
+              <input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
+              <button id="imageBtn" class="btn ghost action-btn" title="选择图片" aria-label="选择图片">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2M5 5h14v9.6l-3.3-3.3a1 1 0 0 0-1.4 0L11 14.6l-1.3-1.3a1 1 0 0 0-1.4 0L5 16.6zm0 14v-1.6l4-4 1.3 1.3a1 1 0 0 0 1.4 0L15 11.4l4 4V19zM8.5 10A1.5 1.5 0 1 1 8.5 7a1.5 1.5 0 0 1 0 3"/></svg>
+              </button>
+              <button id="voiceBtn" class="btn ghost action-btn" title="语音输入" aria-label="语音输入">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3m5-3a1 1 0 1 1 2 0 7 7 0 0 1-6 6.92V21h3a1 1 0 1 1 0 2H8a1 1 0 1 1 0-2h3v-3.08A7 7 0 0 1 5 11a1 1 0 1 1 2 0 5 5 0 0 0 10 0"/></svg>
+              </button>
+              <button id="sendBtn" class="btn primary action-btn" title="发送" aria-label="发送">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m21.7 2.3-19 7a1 1 0 0 0 .06 1.9l7.8 2.3 2.3 7.8a1 1 0 0 0 1.9.06l7-19a1 1 0 0 0-1.3-1.3M12.1 18l-1.5-5.2 5.2-5.2-7 4 3.3 1a1 1 0 0 1 .7.7z"/></svg>
+              </button>
+              <button id="stopBtn" class="btn ghost action-btn" title="停止" aria-label="停止">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 7h10v10H7z"/></svg>
+              </button>
+            </div>
+          </div>
+          <div id="status" class="status">就绪</div>
+        </div>
+      </section>
+
+      <aside id="memoryDrawer" class="panel memory-drawer">
+        <div class="memory-head">
+          <div class="title">记忆管理</div>
+          <div style="display:flex;gap:8px">
+            <button id="refreshMemoryBtn" class="mini-btn" title="刷新">刷新</button>
+            <button id="closeMemoryBtn" class="icon-btn" title="关闭">×</button>
+          </div>
+        </div>
+        <div class="memory-body">
+          <section class="memory-card">
+            <h3>系统 / 智能体约束</h3>
+            <div class="memory-form">
+              <div class="memory-grid">
+                <select id="instructionScopeType">
+                  <option value="global">global</option>
+                  <option value="agent">agent</option>
+                  <option value="user">user</option>
+                </select>
+                <input id="instructionScopeId" class="field" placeholder="scope_id（agent 时可填，user 自动取当前用户）" />
+              </div>
+              <input id="instructionPriority" class="field" type="number" min="1" max="10000" value="100" />
+              <textarea id="instructionContent" placeholder="输入长期规则，例如：默认使用中文回答。"></textarea>
+              <button id="createInstructionBtn" class="mini-btn">保存约束</button>
+            </div>
+            <div id="instructionList" class="memory-list" style="margin-top:10px"></div>
+          </section>
+
+          <section class="memory-card">
+            <h3>用户画像</h3>
+            <div class="memory-form">
+              <div class="memory-grid">
+                <input id="profileCategory" class="field" value="preference" placeholder="category" />
+                <input id="profileKey" class="field" placeholder="memory_key（可选）" />
+              </div>
+              <input id="profileValue" class="field" placeholder="memory_value，例如 zh-CN" />
+              <textarea id="profileContent" placeholder="输入画像内容，例如：用户偏好：默认使用中文回复。"></textarea>
+              <button id="createProfileBtn" class="mini-btn">新增画像</button>
+            </div>
+            <div id="profileList" class="memory-list" style="margin-top:10px"></div>
+          </section>
+
+          <section class="memory-card">
+            <h3>历史经验</h3>
+            <div id="episodeList" class="memory-list"></div>
+          </section>
+
+          <section class="memory-card">
+            <h3>召回日志</h3>
+            <div id="recallList" class="memory-list"></div>
+          </section>
+        </div>
+      </aside>
+    </main>
+
+    <script>
+      const API_PREFIX = inferApiPrefix(window.location.pathname);
+      const API_BASE = API_PREFIX ? `${API_PREFIX}/api` : "/api";
+      const CHAT_RUN_PATH = API_PREFIX ? `${API_PREFIX}/v1/chat` : "/v1/chat";
+
+      function inferApiPrefix(pathname) {
+        const normalized = String(pathname || "/").replace(/\/+$/, "") || "/";
+        if (normalized.endsWith("/chat")) {
+          const prefix = normalized.slice(0, -5);
+          return prefix || "";
+        }
+        // Fallback for historical deployments.
+        if (normalized.startsWith("/copilot")) return "/copilot";
+        return "";
+      }
+
+      function apiPath(path) {
+        return `${API_BASE}${path.startsWith("/") ? path : `/${path}`}`;
+      }
+
+      const sessionsEl = document.getElementById("sessions");
+      const messagesEl = document.getElementById("messages");
+      const chatTitleEl = document.getElementById("chatTitle");
+      const inputEl = document.getElementById("input");
+      const sendBtn = document.getElementById("sendBtn");
+      const stopBtn = document.getElementById("stopBtn");
+      const voiceBtn = document.getElementById("voiceBtn");
+      const excelBtn = document.getElementById("excelBtn");
+      const excelInputEl = document.getElementById("excelInput");
+      const imageBtn = document.getElementById("imageBtn");
+      const imageInputEl = document.getElementById("imageInput");
+      const imagePreviewEl = document.getElementById("imagePreview");
+      const imagePreviewImgEl = document.getElementById("imagePreviewImg");
+      const imagePreviewNameEl = document.getElementById("imagePreviewName");
+      const imagePreviewMetaEl = document.getElementById("imagePreviewMeta");
+      const removeImageBtn = document.getElementById("removeImageBtn");
+      const newSessionBtn = document.getElementById("newSessionBtn");
+      const statusEl = document.getElementById("status");
+      const sidebarEl = document.querySelector(".sidebar");
+      const toggleSessionsBtn = document.getElementById("toggleSessionsBtn");
+      const backdropEl = document.getElementById("backdrop");
+      const toggleMemoryBtn = document.getElementById("toggleMemoryBtn");
+      const memoryDrawerEl = document.getElementById("memoryDrawer");
+      const closeMemoryBtn = document.getElementById("closeMemoryBtn");
+      const refreshMemoryBtn = document.getElementById("refreshMemoryBtn");
+      const instructionScopeTypeEl = document.getElementById("instructionScopeType");
+      const instructionScopeIdEl = document.getElementById("instructionScopeId");
+      const instructionPriorityEl = document.getElementById("instructionPriority");
+      const instructionContentEl = document.getElementById("instructionContent");
+      const createInstructionBtn = document.getElementById("createInstructionBtn");
+      const instructionListEl = document.getElementById("instructionList");
+      const profileCategoryEl = document.getElementById("profileCategory");
+      const profileKeyEl = document.getElementById("profileKey");
+      const profileValueEl = document.getElementById("profileValue");
+      const profileContentEl = document.getElementById("profileContent");
+      const createProfileBtn = document.getElementById("createProfileBtn");
+      const profileListEl = document.getElementById("profileList");
+      const episodeListEl = document.getElementById("episodeList");
+      const recallListEl = document.getElementById("recallList");
+
+      const state = {
+        sessions: [],
+        activeSessionId: null,
+        messages: [],
+        abortController: null,
+        activeAssistantId: null,
+        sidebarOpen: false,
+        mediaRecorder: null,
+        mediaStream: null,
+        mediaChunks: [],
+        recording: false,
+        selectedImage: null,
+        memoryPanelOpen: false,
+        memory: {
+          instructions: [],
+          profiles: [],
+          episodes: [],
+          recalls: [],
+        },
+      };
+
+      function syncViewportHeight() {
+        document.documentElement.style.setProperty("--app-h", `${window.innerHeight}px`);
+      }
+      syncViewportHeight();
+      window.addEventListener("resize", syncViewportHeight);
+      window.addEventListener("orientationchange", syncViewportHeight);
+
+      function uid() {
+        return crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random());
+      }
+
+      function setStatus(text, isErr = false) {
+        statusEl.textContent = text;
+        statusEl.style.color = isErr ? "#dc2626" : "#64748b";
+      }
+
+      function escapeHtml(text) {
+        return String(text || "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;");
+      }
+
+      function contentToText(content) {
+        if (typeof content === "string") return content;
+        if (Array.isArray(content)) {
+          return content
+            .map((part) => {
+              if (typeof part === "string") return part;
+              if (!part || typeof part !== "object") return "";
+              if (typeof part.text === "string") return part.text;
+              if (typeof part.content === "string") return part.content;
+              return "";
+            })
+            .filter(Boolean)
+            .join("");
+        }
+        return content ? String(content) : "";
+      }
+
+      function extractImageUrls(content) {
+        if (!Array.isArray(content)) return [];
+        return content
+          .map((part) => {
+            if (!part || typeof part !== "object") return "";
+            const imageUrl = part.image_url;
+            if (typeof imageUrl === "string") return imageUrl;
+            if (imageUrl && typeof imageUrl.url === "string") return imageUrl.url;
+            if (part.type === "binary") {
+              if (typeof part.url === "string" && part.url) return part.url;
+              if (typeof part.data === "string" && part.data) {
+                const mimeType = part.mimeType || part.mime_type || "image/png";
+                return `data:${mimeType};base64,${part.data}`;
+              }
+            }
+            return "";
+          })
+          .filter(Boolean);
+      }
+
+      function splitDataUrl(dataUrl) {
+        const raw = String(dataUrl || "");
+        const match = raw.match(/^data:([^;,]+);base64,(.*)$/);
+        if (!match) return { mimeType: "image/png", data: raw };
+        return { mimeType: match[1], data: match[2] };
+      }
+
+      function hasMessageContent(content) {
+        return contentToText(content).trim().length > 0 || extractImageUrls(content).length > 0;
+      }
+
+      function formatBytes(bytes) {
+        if (!Number.isFinite(bytes)) return "";
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+      }
+
+      function formatTime(v) {
+        if (!v) return "";
+        try { return new Date(v).toLocaleString(); } catch { return ""; }
+      }
+
+      function authHeaders(isJson = true) {
+        const headers = {};
+        if (isJson) {
+          headers["Content-Type"] = "application/json";
+        }
+        return headers;
+      }
+
+      async function api(path, options = {}) {
+        const res = await fetch(path, {
+          ...options,
+          headers: { ...authHeaders(true), ...(options.headers || {}) },
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      }
+
+      function renderMemoryList(el, items, renderer) {
+        el.innerHTML = "";
+        if (!items.length) {
+          el.innerHTML = `<div class="empty">暂无数据</div>`;
+          return;
+        }
+        for (const item of items) {
+          const wrap = document.createElement("div");
+          wrap.className = "memory-item";
+          wrap.innerHTML = renderer(item);
+          el.appendChild(wrap);
+        }
+      }
+
+      function renderMemoryPanel() {
+        renderMemoryList(
+          instructionListEl,
+          state.memory.instructions,
+          (item) => `
+            <div class="memory-item-head">
+              <div class="memory-item-title">${escapeHtml(item.scope_type)} / ${escapeHtml(item.scope_id || "-")}</div>
+              <button class="mini-btn danger" data-action="del-instruction" data-id="${item.id}">删除</button>
+            </div>
+            <div class="memory-item-sub">priority=${item.priority} · ${escapeHtml(item.updated_at || item.created_at || "")}</div>
+            <div class="memory-item-text">${escapeHtml(item.content)}</div>
+          `
+        );
+        renderMemoryList(
+          profileListEl,
+          state.memory.profiles,
+          (item) => `
+            <div class="memory-item-head">
+              <div class="memory-item-title">${escapeHtml(item.category)} / ${escapeHtml(item.memory_key)}</div>
+              <button class="mini-btn danger" data-action="del-profile" data-id="${item.id}">删除</button>
+            </div>
+            <div class="memory-item-sub">${escapeHtml(item.memory_value)} · confidence=${Number(item.confidence || 0).toFixed(2)}</div>
+            <div class="memory-item-text">${escapeHtml(item.content)}</div>
+          `
+        );
+        renderMemoryList(
+          episodeListEl,
+          state.memory.episodes,
+          (item) => `
+            <div class="memory-item-head">
+              <div class="memory-item-title">episode #${item.id}</div>
+            </div>
+            <div class="memory-item-sub">${escapeHtml(item.created_at || "")}</div>
+            <div class="memory-item-text">${escapeHtml(item.summary)}</div>
+          `
+        );
+        renderMemoryList(
+          recallListEl,
+          state.memory.recalls,
+          (item) => `
+            <div class="memory-item-head">
+              <div class="memory-item-title mono">${escapeHtml(item.query)}</div>
+            </div>
+            <div class="memory-item-sub">${escapeHtml(item.created_at || "")} · i=${item.instruction_count} p=${item.profile_count} e=${item.episode_count}</div>
+          `
+        );
+      }
+
+      async function refreshMemory() {
+        const [globalInstructions, agentInstructions, userInstructions, profiles, episodes, recalls] = await Promise.all([
+          api(apiPath("/memory/instructions?scope_type=global")),
+          api(apiPath("/memory/instructions?scope_type=agent")),
+          api(apiPath("/memory/instructions?scope_type=user")),
+          api(apiPath("/memory/profiles?limit=100")),
+          api(apiPath("/memory/episodes?limit=20")),
+          api(apiPath("/memory/recalls?limit=20")),
+        ]);
+        state.memory.instructions = [...globalInstructions, ...agentInstructions, ...userInstructions];
+        state.memory.profiles = profiles;
+        state.memory.episodes = episodes;
+        state.memory.recalls = recalls;
+        renderMemoryPanel();
+      }
+
+      async function createInstruction() {
+        const content = instructionContentEl.value.trim();
+        if (!content) return;
+        await api(apiPath("/memory/instructions"), {
+          method: "POST",
+          body: JSON.stringify({
+            scope_type: instructionScopeTypeEl.value,
+            scope_id: instructionScopeIdEl.value.trim() || null,
+            priority: Number(instructionPriorityEl.value || 100),
+            content,
+            enabled: true,
+          }),
+        });
+        instructionContentEl.value = "";
+        await refreshMemory();
+        setStatus("约束已新增");
+      }
+
+      async function createProfile() {
+        const content = profileContentEl.value.trim();
+        const memoryValue = profileValueEl.value.trim();
+        if (!content || !memoryValue) return;
+        await api(apiPath("/memory/profiles"), {
+          method: "POST",
+          body: JSON.stringify({
+            category: profileCategoryEl.value.trim() || "preference",
+            memory_key: profileKeyEl.value.trim() || null,
+            memory_value: memoryValue,
+            content,
+            confidence: 1.0,
+          }),
+        });
+        profileValueEl.value = "";
+        profileContentEl.value = "";
+        profileKeyEl.value = "";
+        await refreshMemory();
+        setStatus("画像已新增");
+      }
+
+      function _guessExt(type) {
+        if (type.includes("webm")) return "webm";
+        if (type.includes("ogg")) return "ogg";
+        if (type.includes("wav")) return "wav";
+        if (type.includes("mpeg")) return "mp3";
+        if (type.includes("mp4")) return "m4a";
+        return "webm";
+      }
+
+      async function uploadVoice(blob) {
+        const fd = new FormData();
+        const ext = _guessExt(blob.type || "");
+        fd.append("file", blob, `voice.${ext}`);
+        fd.append("language", "zh");
+
+        const res = await fetch(apiPath("/asr/transcribe"), {
+          method: "POST",
+          headers: authHeaders(false),
+          body: fd,
+        });
+        if (!res.ok) {
+          let detail = "";
+          try {
+            detail = (await res.json())?.detail || "";
+          } catch {}
+          throw new Error(detail || `HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        const text = String(data?.text || "").trim();
+        if (!text) throw new Error("ASR未返回文本");
+        inputEl.value = inputEl.value ? `${inputEl.value}\n${text}` : text;
+      }
+
+      async function uploadExcelFile(file) {
+        if (!file) return;
+        if (!state.activeSessionId) {
+          setStatus("请先创建会话", true);
+          return;
+        }
+        const suffix = (file.name.split(".").pop() || "").toLowerCase();
+        if (!["xlsx", "xlsm"].includes(suffix)) {
+          setStatus("只支持上传 .xlsx / .xlsm Excel 文件", true);
+          return;
+        }
+        const maxBytes = 10 * 1024 * 1024;
+        if (file.size > maxBytes) {
+          setStatus("Excel 文件不能超过 10MB", true);
+          return;
+        }
+
+        const fd = new FormData();
+        fd.append("file", file, file.name);
+        fd.append("session_id", state.activeSessionId);
+        setStatus("Excel 上传中...");
+
+        const res = await fetch(apiPath("/files/excel/upload"), {
+          method: "POST",
+          headers: authHeaders(false),
+          body: fd,
+        });
+        if (!res.ok) {
+          let detail = "";
+          try {
+            detail = (await res.json())?.detail || "";
+          } catch {}
+          throw new Error(detail || `HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        const filePath = String(data?.file_path || "").trim();
+        const prompt = `我上传了 Excel 文件：${filePath}。请先调用 parse_excel_file 工具解析这个文件，然后基于表格内容回答我的问题：`;
+        inputEl.value = inputEl.value ? `${prompt}\n${inputEl.value}` : prompt;
+        inputEl.focus();
+        setStatus(`Excel 已上传：${data.filename || file.name}`);
+      }
+
+      async function toggleVoiceRecord() {
+        if (!navigator.mediaDevices || !window.MediaRecorder) {
+          setStatus("当前浏览器不支持语音录制", true);
+          return;
+        }
+        if (state.recording && state.mediaRecorder) {
+          state.mediaRecorder.stop();
+          return;
+        }
+
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const recorder = new MediaRecorder(stream);
+          state.mediaRecorder = recorder;
+          state.mediaStream = stream;
+          state.mediaChunks = [];
+          state.recording = true;
+          voiceBtn.classList.add("recording");
+          voiceBtn.title = "结束录音";
+          voiceBtn.setAttribute("aria-label", "结束录音");
+          setStatus("录音中...");
+
+          recorder.ondataavailable = (ev) => {
+            if (ev.data && ev.data.size > 0) state.mediaChunks.push(ev.data);
+          };
+
+          recorder.onstop = async () => {
+            state.recording = false;
+            voiceBtn.classList.remove("recording");
+            voiceBtn.title = "语音输入";
+            voiceBtn.setAttribute("aria-label", "语音输入");
+            setStatus("语音上传中...");
+            try {
+              const blob = new Blob(state.mediaChunks, { type: recorder.mimeType || "audio/webm" });
+              await uploadVoice(blob);
+              setStatus("语音识别完成");
+            } catch (e) {
+              setStatus(`语音识别失败: ${e.message || e}`, true);
+            } finally {
+              state.mediaChunks = [];
+              if (state.mediaStream) {
+                for (const track of state.mediaStream.getTracks()) track.stop();
+              }
+              state.mediaStream = null;
+              state.mediaRecorder = null;
+            }
+          };
+
+          recorder.start();
+        } catch (e) {
+          setStatus(`无法开始录音: ${e.message || e}`, true);
+        }
+      }
+
+      function renderSelectedImage() {
+        if (!state.selectedImage) {
+          imagePreviewEl.classList.remove("show");
+          imagePreviewImgEl.removeAttribute("src");
+          imagePreviewNameEl.textContent = "";
+          imagePreviewMetaEl.textContent = "";
+          return;
+        }
+        imagePreviewImgEl.src = state.selectedImage.dataUrl;
+        imagePreviewNameEl.textContent = state.selectedImage.name || "image";
+        imagePreviewMetaEl.textContent = `${state.selectedImage.type || "image"} · ${formatBytes(state.selectedImage.size)}`;
+        imagePreviewEl.classList.add("show");
+      }
+
+      function clearSelectedImage() {
+        state.selectedImage = null;
+        imageInputEl.value = "";
+        renderSelectedImage();
+      }
+
+      function readFileAsDataUrl(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ""));
+          reader.onerror = () => reject(reader.error || new Error("读取图片失败"));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function handleImageSelected(file) {
+        if (!file) return;
+        if (!file.type || !file.type.startsWith("image/")) {
+          setStatus("请选择图片文件", true);
+          return;
+        }
+        const maxBytes = 6 * 1024 * 1024;
+        if (file.size > maxBytes) {
+          setStatus("图片不能超过 6MB", true);
+          return;
+        }
+        const dataUrl = await readFileAsDataUrl(file);
+        state.selectedImage = {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          dataUrl,
+        };
+        renderSelectedImage();
+        setStatus("图片已选择");
+      }
+
+      function buildUserContent(text) {
+        const cleaned = String(text || "").trim();
+        if (!state.selectedImage) return cleaned;
+        const imagePayload = splitDataUrl(state.selectedImage.dataUrl);
+        const parts = [];
+        if (cleaned) {
+          parts.push({ type: "text", text: cleaned });
+        } else {
+          parts.push({ type: "text", text: "请描述这张图片，并回答我的问题。" });
+        }
+        parts.push({
+          type: "binary",
+          mimeType: imagePayload.mimeType,
+          data: imagePayload.data,
+          filename: state.selectedImage.name || "image",
+        });
+        return parts;
+      }
+
+      function renderSessions() {
+        sessionsEl.innerHTML = "";
+        for (const s of state.sessions) {
+          const item = document.createElement("div");
+          item.className = "session" + (s.id === state.activeSessionId ? " active" : "");
+          item.innerHTML = `<div class="session-main"><div class="name">${s.title || "新会话"}</div><div class="meta">${formatTime(s.last_message_at || s.created_at)}</div></div><button class="session-del" title="删除会话">✕</button>`;
+          item.onclick = () => switchSession(s.id);
+          const delBtn = item.querySelector(".session-del");
+          delBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteSession(s.id);
+          };
+          sessionsEl.appendChild(item);
+        }
+      }
+
+      async function deleteSession(sessionId) {
+        if (!confirm("确认删除该会话？")) return;
+        await api(apiPath(`/chat/sessions/${sessionId}`), { method: "DELETE" });
+        if (state.activeSessionId === sessionId) {
+          state.activeSessionId = null;
+          state.messages = [];
+          renderMessages();
+        }
+        await refreshSessions();
+        if (!state.activeSessionId) {
+          if (state.sessions.length > 0) await switchSession(state.sessions[0].id);
+          else await createSession();
+        }
+      }
+
+      function renderMessages(autoScroll = true) {
+        messagesEl.innerHTML = "";
+        for (const m of state.messages) {
+          const div = document.createElement("div");
+          div.className = "msg " + (m.role === "user" ? "user" : m.role === "assistant" ? "assistant" : "system");
+          const text = contentToText(m.content);
+          if (text) {
+            const textNode = document.createElement("div");
+            textNode.textContent = text;
+            div.appendChild(textNode);
+          }
+          for (const url of extractImageUrls(m.content)) {
+            const img = document.createElement("img");
+            img.className = "msg-image";
+            img.src = url;
+            img.alt = "用户上传的图片";
+            div.appendChild(img);
+          }
+          messagesEl.appendChild(div);
+        }
+        if (autoScroll) messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
+      async function refreshSessions() {
+        state.sessions = await api(apiPath("/chat/sessions"), { method: "GET" });
+        renderSessions();
+      }
+
+      async function createSession() {
+        const s = await api(apiPath("/chat/sessions"), {
+          method: "POST",
+          body: JSON.stringify({ title: null }),
+        });
+        state.sessions.unshift(s);
+        state.activeSessionId = s.id;
+        state.messages = [];
+        chatTitleEl.textContent = s.title || "新会话";
+        renderSessions();
+        renderMessages();
+        setSidebarOpen(false);
+      }
+
+      async function switchSession(sessionId) {
+        state.activeSessionId = sessionId;
+        renderSessions();
+        const list = await api(apiPath(`/chat/sessions/${sessionId}/messages?limit=500`), { method: "GET" });
+        state.messages = list.map((m) => ({ id: String(m.id), role: m.role, content: m.content }));
+        const session = state.sessions.find((x) => x.id === sessionId);
+        chatTitleEl.textContent = session?.title || "会话";
+        renderMessages();
+        setSidebarOpen(false);
+      }
+
+      async function bootstrap() {
+        await refreshSessions();
+        if (state.sessions.length === 0) {
+          await createSession();
+        } else {
+          await switchSession(state.sessions[0].id);
+        }
+      }
+
+      function buildRunInput() {
+        const payloadMessages = state.messages
+          .filter((m) => (m.role === "user" || m.role === "assistant") && hasMessageContent(m.content))
+          .map((m) => ({ id: m.id || uid(), role: m.role, content: m.content }));
+        return {
+          threadId: state.activeSessionId,
+          runId: uid(),
+          state: {},
+          messages: payloadMessages,
+          tools: [],
+          context: [],
+          forwardedProps: {},
+        };
+      }
+
+      async function sendMessage() {
+        const text = inputEl.value.trim();
+        if ((!text && !state.selectedImage) || state.abortController || !state.activeSessionId) return;
+
+        inputEl.value = "";
+        const userMsg = { id: uid(), role: "user", content: buildUserContent(text) };
+        state.messages.push(userMsg);
+        clearSelectedImage();
+        const runInput = buildRunInput();
+        const assistantId = uid();
+        state.messages.push({ id: assistantId, role: "assistant", content: "" });
+        state.activeAssistantId = assistantId;
+        renderMessages();
+
+        const headers = { ...authHeaders(true), Accept: "text/event-stream" };
+
+        const controller = new AbortController();
+        state.abortController = controller;
+        setStatus("生成中...");
+        try {
+          const res = await fetch(CHAT_RUN_PATH, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(runInput),
+            signal: controller.signal,
+          });
+          if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
+
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = "";
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const blocks = buffer.split("\n\n");
+            buffer = blocks.pop() || "";
+            for (const b of blocks) {
+              const line = b.split("\n").find((x) => x.startsWith("data: "));
+              if (!line) continue;
+              let ev;
+              try { ev = JSON.parse(line.slice(6)); } catch { continue; }
+              if (ev.type === "TEXT_MESSAGE_CONTENT" && ev.delta) {
+                const idx = state.messages.findIndex((m) => m.id === state.activeAssistantId);
+                if (idx >= 0) {
+                  state.messages[idx].content += ev.delta;
+                  renderMessages(false);
+                }
+              } else if (ev.type === "RUN_ERROR") {
+                setStatus(`运行错误: ${ev.message || "unknown"}`, true);
+              }
+            }
+          }
+          await refreshSessions();
+          if (state.memoryPanelOpen) {
+            refreshMemory().catch(() => {});
+          }
+          setStatus("完成");
+        } catch (e) {
+          if (e.name === "AbortError") setStatus("已停止");
+          else setStatus(`请求失败: ${e.message}`, true);
+        } finally {
+          state.abortController = null;
+          state.activeAssistantId = null;
+        }
+      }
+
+      sendBtn.onclick = sendMessage;
+      stopBtn.onclick = () => state.abortController && state.abortController.abort();
+      voiceBtn.onclick = toggleVoiceRecord;
+      excelBtn.onclick = () => excelInputEl.click();
+      excelInputEl.onchange = () => {
+        uploadExcelFile(excelInputEl.files?.[0])
+          .catch((e) => setStatus(`Excel 上传失败: ${e.message || e}`, true))
+          .finally(() => {
+            excelInputEl.value = "";
+          });
+      };
+      imageBtn.onclick = () => imageInputEl.click();
+      imageInputEl.onchange = () => {
+        handleImageSelected(imageInputEl.files?.[0]).catch((e) => setStatus(`图片读取失败: ${e.message || e}`, true));
+      };
+      removeImageBtn.onclick = clearSelectedImage;
+      newSessionBtn.onclick = createSession;
+      toggleSessionsBtn.onclick = () => setSidebarOpen(!state.sidebarOpen);
+      toggleMemoryBtn.onclick = () => setMemoryPanelOpen(!state.memoryPanelOpen);
+      closeMemoryBtn.onclick = () => setMemoryPanelOpen(false);
+      refreshMemoryBtn.onclick = () => refreshMemory().catch((e) => setStatus(`记忆加载失败: ${e.message}`, true));
+      createInstructionBtn.onclick = () => createInstruction().catch((e) => setStatus(`新增约束失败: ${e.message}`, true));
+      createProfileBtn.onclick = () => createProfile().catch((e) => setStatus(`新增画像失败: ${e.message}`, true));
+      backdropEl.onclick = () => {
+        setSidebarOpen(false);
+        setMemoryPanelOpen(false);
+      };
+      inputEl.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") sendMessage();
+      });
+
+      function setSidebarOpen(open) {
+        state.sidebarOpen = !!open;
+        sidebarEl.classList.toggle("open", state.sidebarOpen);
+        syncOverlayState();
+      }
+
+      function setMemoryPanelOpen(open) {
+        state.memoryPanelOpen = !!open;
+        memoryDrawerEl.classList.toggle("open", state.memoryPanelOpen);
+        syncOverlayState();
+        if (state.memoryPanelOpen) {
+          refreshMemory().catch((e) => setStatus(`记忆加载失败: ${e.message}`, true));
+        }
+      }
+
+      function syncOverlayState() {
+        backdropEl.classList.toggle("show", !!(state.sidebarOpen || state.memoryPanelOpen));
+      }
+
+      instructionListEl.onclick = (e) => {
+        const target = e.target.closest("[data-action='del-instruction']");
+        if (!target) return;
+        const id = target.getAttribute("data-id");
+        api(apiPath(`/memory/instructions/${id}`), { method: "DELETE" })
+          .then(() => refreshMemory())
+          .catch((err) => setStatus(`删除约束失败: ${err.message}`, true));
+      };
+
+      profileListEl.onclick = (e) => {
+        const target = e.target.closest("[data-action='del-profile']");
+        if (!target) return;
+        const id = target.getAttribute("data-id");
+        api(apiPath(`/memory/profiles/${id}`), { method: "DELETE" })
+          .then(() => refreshMemory())
+          .catch((err) => setStatus(`删除画像失败: ${err.message}`, true));
+      };
+
+      bootstrap().catch((e) => setStatus(`初始化失败: ${e.message}`, true));
+    </script>
+  </body>
+</html>

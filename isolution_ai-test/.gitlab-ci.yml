@@ -1,0 +1,58 @@
+stages:
+  - Image
+  - Deploy
+
+variables:
+  SERVICE: "isolution_ai"
+
+build-image:
+  stage: Image
+  tags: ["ai-249-deploy"]
+  script:
+    - docker build -t ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${SERVICE}:${CI_COMMIT_SHORT_SHA} .
+    - docker login --username=${REGISTRY_USER} --password ${REGISTRY_PASSWORD} ${REGISTRY_URL}
+    - docker push ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${SERVICE}:${CI_COMMIT_SHORT_SHA}
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+    - if: $CI_COMMIT_BRANCH == "test"
+    - if: $CI_COMMIT_BRANCH == "master"
+
+deploy-dev:
+  stage: Deploy
+  needs: ["build-image"]
+  tags: ["ai-249-deploy"]
+  variables:
+    POD_NAME: ${SERVICE}_dev
+  script:
+    - if docker ps -a -f "name=${POD_NAME}" --format '{{.Names}}' |grep -wq "${POD_NAME}";then docker rm -vf ${POD_NAME} ;fi
+    - docker run -d -p 9001:9001 --name ${POD_NAME} -e TZ=Asia/Shanghai --restart=on-failure ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${SERVICE}:${CI_COMMIT_SHORT_SHA} python -u isolution_run.py --env dev
+    - sleep 10
+    - docker ps -a -f "name=${POD_NAME}" --filter status=running |grep -wq "${POD_NAME}"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+
+
+deploy-test:
+  stage: Deploy
+  needs: ["build-image"]
+  tags: ["ai-249-deploy"]
+  variables:
+    POD_NAME: ${SERVICE}_test
+  script:
+    - if docker ps -a -f "name=${POD_NAME}" --format '{{.Names}}' |grep -wq "${POD_NAME}";then docker rm -vf ${POD_NAME} ;fi
+    - docker run -d -p 9002:9002 --name ${POD_NAME} -e TZ=Asia/Shanghai --restart=on-failure ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${SERVICE}:${CI_COMMIT_SHORT_SHA} python -u isolution_run.py --env test
+    - sleep 10
+    - docker ps -a -f "name=${POD_NAME}" --filter status=running |grep -wq "${POD_NAME}"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "test"
+
+deploy-prod:
+  stage: Deploy
+  needs: ["build-image"]
+  tags: ["ai-249-deploy"]
+  script:
+    - docker ps
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+      when: manual
+

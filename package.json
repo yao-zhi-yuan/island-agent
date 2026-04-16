@@ -1,0 +1,11 @@
+{
+  "name": "fastapi-project",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "uv run uvicorn app.main:app --reload",
+    "setup": "sh -c 'uv venv && source .venv/bin/activate && uv sync'",
+    "start": "uv run uvicorn app.main:app",
+    "health": "curl -f http://127.0.0.1:8000/health"
+  }
+}

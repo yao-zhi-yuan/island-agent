@@ -1,0 +1,10 @@
+uvicorn==0.30.6
+fastapi==0.115.11
+pydantic==2.9.2
+numpy==1.26.4
+langgraph==0.6.7
+langchain==0.3.26
+langchain-openai==0.3.27
+pandas==2.2.3
+requests
+pymilvus
